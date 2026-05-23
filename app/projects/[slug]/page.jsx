@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "../../../lib/supabase";
+
 
 const projects = {
   "crypto-trading-bot": {
@@ -55,8 +57,36 @@ const projects = {
 export default function ProjectDetails({ params }) {
 
   const [menuOpen, setMenuOpen] = useState(false);
-
+  
+  const [user, setUser] = useState(null);
   const project = projects[params.slug];
+
+// CHECK USER
+useEffect(() => {
+
+  async function getUser() {
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    setUser(user);
+
+  }
+
+  getUser();
+
+}, []);
+
+// LOGOUT
+async function handleLogout() {
+
+  await supabase.auth.signOut();
+
+  window.location.href = "/";
+
+}
+
 
   if (!project) {
     return (
@@ -89,34 +119,78 @@ export default function ProjectDetails({ params }) {
 
           </div>
 
-          {/* DESKTOP MENU */}
-          <div className="hidden lg:flex items-center gap-8 text-sm text-gray-300">
+{/* DESKTOP MENU */}
+<div className="hidden lg:flex items-center gap-8 text-sm text-gray-300">
 
-            <a href="/" className="hover:text-orange-400 transition">
-              Home
-            </a>
+  <a href="/" className="hover:text-orange-400 transition">
+    Home
+  </a>
 
-            <a href="/about" className="hover:text-orange-400 transition">
-              About
-            </a>
+  <a href="/about" className="hover:text-orange-400 transition">
+    About
+  </a>
 
-            <a href="/services" className="hover:text-orange-400 transition">
-              Services
-            </a>
+  <a href="/services" className="hover:text-orange-400 transition">
+    Services
+  </a>
 
-            <a href="/projects" className="text-orange-400">
-              Projects
-            </a>
+  <a href="/projects" className="text-orange-400">
+    Projects
+  </a>
 
-            <a href="/blog" className="hover:text-orange-400 transition">
-              Blog
-            </a>
+  <a href="/blog" className="hover:text-orange-400 transition">
+    Blog
+  </a>
 
-            <a href="/contact" className="hover:text-orange-400 transition">
-              Contact
-            </a>
+  <a href="/contact" className="hover:text-orange-400 transition">
+    Contact
+  </a>
 
-          </div>
+  {/* AUTH */}
+
+  {user ? (
+
+    <>
+
+      <a
+        href="/dashboard"
+        className="hover:text-orange-400 transition"
+      >
+        Dashboard
+      </a>
+
+      <button
+        onClick={handleLogout}
+        className="border border-white/10 px-5 py-3 rounded-xl hover:border-red-500 transition"
+      >
+        Logout
+      </button>
+
+    </>
+
+  ) : (
+
+    <>
+
+      <a
+        href="/login"
+        className="border border-white/10 px-5 py-3 rounded-xl hover:border-orange-500 transition"
+      >
+        Login
+      </a>
+
+      <a
+        href="/signup"
+        className="bg-orange-500 text-black px-5 py-3 rounded-xl font-bold"
+      >
+        Sign Up
+      </a>
+
+    </>
+
+  )}
+
+</div>
 
           {/* RIGHT SIDE */}
           <div className="flex items-center gap-4">
@@ -170,6 +244,50 @@ export default function ProjectDetails({ params }) {
               <a href="/contact" className="hover:text-orange-400">
                 Contact
               </a>
+{/* AUTH */}
+
+{user ? (
+
+  <>
+
+    <a
+      href="/dashboard"
+      className="hover:text-orange-400"
+    >
+      Dashboard
+    </a>
+
+    <button
+      onClick={handleLogout}
+      className="border border-white/10 px-5 py-3 rounded-xl hover:border-red-500 transition"
+    >
+      Logout
+    </button>
+
+  </>
+
+) : (
+
+  <>
+
+    <a
+      href="/login"
+      className="border border-white/10 px-5 py-3 rounded-xl hover:border-orange-500 transition"
+    >
+      Login
+    </a>
+
+    <a
+      href="/signup"
+      className="bg-orange-500 text-black px-5 py-3 rounded-xl font-bold"
+    >
+      Sign Up
+    </a>
+
+  </>
+
+)}
+
 
               <a
                 href="/request"

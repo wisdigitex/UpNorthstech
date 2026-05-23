@@ -8,3 +8,11 @@ margin:0;
 background:#050816;
 font-family:Arial,sans-serif;
 }
+html,
+body {
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}

@@ -1,6 +1,5 @@
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { NextResponse } from "next/server";
+import { supabase } from "../../../lib/supabase";
 
 export async function POST(req) {
 
@@ -8,53 +7,59 @@ export async function POST(req) {
 
     const body = await req.json();
 
-    const data = await resend.emails.send({
+    const {
+      fullname,
+      email,
+      service,
+      budget,
+      timeframe,
+      contract,
+      details,
+    } = body;
 
-      from: process.env.FROM_EMAIL,
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-      to: process.env.NOTIFY_EMAIL,
+    const { data, error } = await supabase
+      .from("project_requests")
+      .insert([
+        {
+          user_id: user?.id,
+          fullname,
+          email,
+          service,
+          budget,
+          timeframe,
+          contract,
+          details,
+          status: "Pending",
+        },
+      ]);
 
-      subject: `New Project Request From ${body.fullname}`,
+    if (error) {
 
-      html: `
-        <div style="font-family:sans-serif;padding:20px">
+      console.log(error);
 
-          <h2>New Project Request</h2>
+      return NextResponse.json({
+        success: false,
+        error,
+      });
 
-          <p><strong>Full Name:</strong> ${body.fullname}</p>
+    }
 
-          <p><strong>Email:</strong> ${body.email}</p>
-
-          <p><strong>Service:</strong> ${body.service}</p>
-
-          <p><strong>Budget:</strong> ${body.budget}</p>
-
-          <p><strong>Amount:</strong> ${body.amount}</p>
-
-          <p><strong>Timeframe:</strong> ${body.timeframe}</p>
-
-          <p><strong>Contract:</strong> ${body.contract}</p>
-
-          <p><strong>Project Details:</strong></p>
-
-          <p>${body.details}</p>
-
-        </div>
-      `,
-    });
-
-    return Response.json({
+    return NextResponse.json({
       success: true,
       data,
     });
 
-  } catch (error) {
+  } catch (err) {
 
-    console.log(error);
+    console.log(err);
 
-    return Response.json({
+    return NextResponse.json({
       success: false,
-      error,
+      error: err.message,
     });
 
   }

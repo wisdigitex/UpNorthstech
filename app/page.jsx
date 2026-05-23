@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
 
 const services = [
   "Web Development",
@@ -51,11 +52,45 @@ const projects = [
 ];
 
 export default function Home() {
+
   const [menuOpen, setMenuOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e) {
+  const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // CHECK LOGGED IN USER
+  useEffect(() => {
+
+    async function getUser() {
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      setUser(user);
+      if (user?.email === "sulaimonganiyu315@gmail.com") {
+  setIsAdmin(true);
+}
+
+    }
+
+    getUser();
+
+  }, []);
+
+  // LOGOUT
+  async function handleLogout() {
+
+    await supabase.auth.signOut();
+
+    window.location.href = "/";
+
+  }
+
+  async function handleSubmit(e) {    
+    
     e.preventDefault();
 
     setLoading(true);
@@ -115,6 +150,7 @@ export default function Home() {
 
           {/* DESKTOP MENU */}
           <div className="hidden lg:flex items-center gap-8 text-sm text-gray-300">
+
             <a href="/" className="hover:text-orange-400 transition">
               Home
             </a>
@@ -138,6 +174,59 @@ export default function Home() {
             <a href="/contact" className="hover:text-orange-400 transition">
               Contact
             </a>
+
+            {/* AUTH BUTTONS */}
+
+            {user ? (
+
+              <>
+
+                <a
+                  href="/dashboard"
+                  className="hover:text-orange-400 transition"
+                >
+                  Dashboard
+                </a>
+                {isAdmin && (
+                  <a
+                    href="/admin"
+                    className="hover:text-orange-400 transition"
+                  >
+                    Admin
+                  </a>
+                )}
+
+                <button
+                  onClick={handleLogout}
+                  className="border border-white/10 px-5 py-2 rounded-xl hover:border-red-500 transition"
+                >
+                  Logout
+                </button>
+
+              </>
+
+            ) : (
+
+              <>
+
+                <a
+                  href="/login"
+                  className="border border-white/10 px-5 py-2 rounded-xl hover:border-orange-500 transition"
+                >
+                  Login
+                </a>
+
+                <a
+                  href="/signup"
+                  className="bg-orange-500 text-black px-5 py-2 rounded-xl font-bold hover:scale-105 transition"
+                >
+                  Sign Up
+                </a>
+
+              </>
+
+            )}
+
           </div>
 
           {/* RIGHT SIDE */}
@@ -185,6 +274,57 @@ export default function Home() {
               <a href="/contact" className="hover:text-orange-400 transition">
                 Contact
               </a>
+              {/* AUTH BUTTONS */}
+
+              {user ? (
+
+                <>
+
+                  <a
+                    href="/dashboard"
+                    className="hover:text-orange-400 transition"
+                  >
+                    Dashboard
+                  </a>
+                  {isAdmin && (
+                    <a
+                      href="/admin"
+                      className="hover:text-orange-400 transition"
+                    >
+                      Admin
+                    </a>
+                  )}
+
+                  <button
+                    onClick={handleLogout}
+                    className="border border-white/10 px-5 py-2 rounded-xl hover:border-red-500 transition"
+                  >
+                    Logout
+                  </button>
+
+                </>
+
+              ) : (
+
+                <>
+
+                  <a
+                    href="/login"
+                    className="border border-white/10 px-5 py-2 rounded-xl hover:border-orange-500 transition"
+                  >
+                    Login
+                  </a>
+
+                  <a
+                    href="/signup"
+                    className="bg-orange-500 text-black px-5 py-2 rounded-xl font-bold hover:scale-105 transition"
+                  >
+                    Sign Up
+                  </a>
+
+                </>
+
+              )}
 
               <a
                 href="/request"
@@ -257,16 +397,29 @@ export default function Home() {
               </div>
             </div>
           </div>
+              <div className="relative flex justify-center items-center px-4">
 
-          <div className="relative">
-            <div className="absolute w-[400px] h-[400px] bg-orange-500/20 blur-3xl rounded-full"></div>
+                <div className="absolute w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-orange-500/20 blur-3xl rounded-full"></div>
 
-            <img
-              src="/images/profile.png"
-              alt="UpNorth Tech"
-              className="relative z-10 rounded-[40px] border border-white/10 w-full h-[650px] object-cover"
-            />
-          </div>
+                <img
+                  src="/images/profile.png"
+                  alt="UpNorth Tech"
+                  className="
+                    relative z-10
+                    rounded-[40px]
+                    border border-white/10
+                    w-full
+                    max-w-[320px]
+                    sm:max-w-[360px]
+                    md:max-w-[500px]
+                    h-[500px]
+                    md:h-[650px]
+                    object-cover
+                    mx-auto
+                  "
+                />
+
+              </div>
         </div>
       </section>
 

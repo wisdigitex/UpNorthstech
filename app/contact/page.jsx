@@ -1,10 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "../../lib/supabase";
+
 
 export default function ContactPage() {
 
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+
+    async function getUser() {
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      setUser(user);
+
+    }
+
+    getUser();
+
+  }, []);
+
+  async function handleLogout() {
+
+    await supabase.auth.signOut();
+
+    window.location.href = "/";
+
+  }
 
   return (
     <main className="bg-[#050816] text-white min-h-screen overflow-hidden">
@@ -27,35 +54,76 @@ export default function ContactPage() {
 
           </div>
 
-          {/* DESKTOP MENU */}
-          <div className="hidden lg:flex items-center gap-8 text-sm text-gray-300">
+    {/* DESKTOP MENU */}
+    <div className="hidden lg:flex items-center gap-8 text-sm text-gray-300">
 
-            <a href="/" className="hover:text-orange-400 transition">
-              Home
-            </a>
+      <a href="/" className="hover:text-orange-400 transition">
+        Home
+      </a>
 
-            <a href="/about" className="hover:text-orange-400 transition">
-              About
-            </a>
+      <a href="/about" className="hover:text-orange-400 transition">
+        About
+      </a>
 
-            <a href="/services" className="hover:text-orange-400 transition">
-              Services
-            </a>
+      <a href="/services" className="hover:text-orange-400 transition">
+        Services
+      </a>
 
-            <a href="/projects" className="hover:text-orange-400 transition">
-              Projects
-            </a>
+      <a href="/projects" className="hover:text-orange-400 transition">
+        Projects
+      </a>
 
-            <a href="/blog" className="hover:text-orange-400 transition">
-              Blog
-            </a>
+      <a href="/blog" className="hover:text-orange-400 transition">
+        Blog
+      </a>
 
-            <a href="/contact" className="text-orange-400">
-              Contact
-            </a>
+      <a href="/contact" className="text-orange-400">
+        Contact
+      </a>
 
-          </div>
+      {user ? (
 
+        <>
+
+          <a
+            href="/dashboard"
+            className="hover:text-orange-400 transition"
+          >
+            Dashboard
+          </a>
+
+          <button
+            onClick={handleLogout}
+            className="border border-white/10 px-5 py-3 rounded-xl hover:border-red-500 transition"
+          >
+            Logout
+          </button>
+
+        </>
+
+      ) : (
+
+        <>
+
+          <a
+            href="/login"
+            className="border border-white/10 px-5 py-3 rounded-xl hover:border-orange-500 transition"
+          >
+            Login
+          </a>
+
+          <a
+            href="/signup"
+            className="bg-orange-500 text-black px-5 py-3 rounded-xl font-bold"
+          >
+            Sign Up
+          </a>
+
+        </>
+
+      )}
+
+    </div>
           {/* RIGHT SIDE */}
           <div className="flex items-center gap-4">
 
@@ -78,49 +146,91 @@ export default function ContactPage() {
 
         </div>
 
-        {/* MOBILE MENU */}
-        {menuOpen && (
+      {/* MOBILE MENU */}
+      {menuOpen && (
 
-          <div className="lg:hidden border-t border-white/10 bg-[#050816] animate-in slide-in-from-top duration-300">
+        <div className="lg:hidden border-t border-white/10 bg-[#050816] animate-in slide-in-from-top duration-300">
 
-            <div className="flex flex-col px-6 py-6 space-y-5 text-gray-300">
+          <div className="flex flex-col px-6 py-6 space-y-5 text-gray-300">
 
-              <a href="/" className="hover:text-orange-400">
-                Home
-              </a>
+            <a href="/" className="hover:text-orange-400">
+              Home
+            </a>
 
-              <a href="/about" className="hover:text-orange-400">
-                About
-              </a>
+            <a href="/about" className="hover:text-orange-400">
+              About
+            </a>
 
-              <a href="/services" className="hover:text-orange-400">
-                Services
-              </a>
+            <a href="/services" className="hover:text-orange-400">
+              Services
+            </a>
 
-              <a href="/projects" className="hover:text-orange-400">
-                Projects
-              </a>
+            <a href="/projects" className="hover:text-orange-400">
+              Projects
+            </a>
 
-              <a href="/blog" className="hover:text-orange-400">
-                Blog
-              </a>
+            <a href="/blog" className="hover:text-orange-400">
+              Blog
+            </a>
 
-              <a href="/contact" className="text-orange-400">
-                Contact
-              </a>
+            <a href="/contact" className="text-orange-400">
+              Contact
+            </a>
 
-              <a
-                href="/request"
-                className="bg-orange-500 text-black px-5 py-4 rounded-xl font-bold text-center"
-              >
-                Start Project
-              </a>
+            {user ? (
 
-            </div>
+              <>
+
+                <a
+                  href="/dashboard"
+                  className="hover:text-orange-400"
+                >
+                  Dashboard
+                </a>
+
+                <button
+                  onClick={handleLogout}
+                  className="border border-white/10 px-5 py-3 rounded-xl hover:border-red-500 transition"
+                >
+                  Logout
+                </button>
+
+              </>
+
+            ) : (
+
+              <>
+
+                <a
+                  href="/login"
+                  className="border border-white/10 px-5 py-3 rounded-xl hover:border-orange-500 transition"
+                >
+                  Login
+                </a>
+
+                <a
+                  href="/signup"
+                  className="bg-orange-500 text-black px-5 py-3 rounded-xl font-bold"
+                >
+                  Sign Up
+                </a>
+
+              </>
+
+            )}
+
+            <a
+              href="/request"
+              className="bg-orange-500 text-black px-5 py-4 rounded-xl font-bold text-center"
+            >
+              Start Project
+            </a>
 
           </div>
 
-        )}
+        </div>
+
+      )}
 
       </nav>
 
@@ -163,7 +273,7 @@ export default function ContactPage() {
             </p>
 
             <div className="space-y-8 mb-12">
-              <div className="bg-white/5 border border-white/10 rounded-[32px] p-8">
+              <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 overflow-hidden max-w-full">
                 <h3 className="text-2xl font-bold mb-3 text-orange-400">
                   Email
                 </h3>
@@ -172,7 +282,7 @@ export default function ContactPage() {
                 </p>
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-[32px] p-8">
+              <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 overflow-hidden max-w-full">
                 <h3 className="text-2xl font-bold mb-3 text-orange-400">
                   Phone
                 </h3>
@@ -181,7 +291,7 @@ export default function ContactPage() {
                 </p>
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-[32px] p-8">
+              <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 overflow-hidden max-w-full">
                 <h3 className="text-2xl font-bold mb-3 text-orange-400">
                   Location
                 </h3>
@@ -445,7 +555,7 @@ export default function ContactPage() {
             ].map((faq, index) => (
               <div
                 key={index}
-                className="bg-white/5 border border-white/10 rounded-[32px] p-8"
+                className="bg-white/5 border border-white/10 rounded-[32px] p-8 overflow-hidden max-w-full"
               >
                 <h3 className="text-3xl font-bold mb-5">
                   {faq.q}

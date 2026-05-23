@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "../../lib/supabase";
 
 export default function RequestPage() {
 
   const [menuOpen, setMenuOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
+
+  const [user, setUser] = useState(null);
 
   const [form, setForm] = useState({
     fullname: "",
@@ -18,6 +21,49 @@ export default function RequestPage() {
     details: "",
   });
 
+  // CHECK USER
+  useEffect(() => {
+
+    async function getUser() {
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      // REDIRECT IF NOT LOGGED IN
+      if (!user) {
+
+        window.location.href = "/login";
+
+        return;
+
+      }
+
+      setUser(user);
+
+      // AUTO FILL USER INFO
+      setForm((prev) => ({
+        ...prev,
+        fullname: user.user_metadata?.full_name || "",
+        email: user.email || "",
+      }));
+
+    }
+
+    getUser();
+
+  }, []);
+
+  // LOGOUT
+  async function handleLogout() {
+
+    await supabase.auth.signOut();
+
+    window.location.href = "/";
+
+  }
+
+  // SUBMIT PROJECT
   async function handleSubmit(e) {
 
     e.preventDefault();
@@ -26,35 +72,74 @@ export default function RequestPage() {
 
     try {
 
-      const response = await fetch("/api/contact", {
+      // SAVE TO SUPABASE DATABASE
+      const { error } = await supabase
+        .from("project_requests")
+        .insert([
+          {
+            user_id: user.id,
+            fullname: form.fullname,
+            email: form.email,
+            service: form.service,
+            budget: form.budget,
+            timeframe: form.timeframe,
+            contract: form.contract,
+            details: form.details,
+            status: "Pending",
+          },
+        ]);
+
+      await fetch(
+      "/api/send-message-email",
+      {
         method: "POST",
 
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type":
+            "application/json",
         },
 
-        body: JSON.stringify(form),
-      });
+        body: JSON.stringify({
 
-      const data = await response.json();
+          to:
+            "sulaimonganiyu315@gmail.com",
 
-      if (data.success) {
+          subject:
+            "New Project Request",
 
-        alert("Project Request Sent Successfully ✅");
+          message: `
+        New project request received.
 
-        setForm({
-          fullname: "",
-          email: "",
-          service: "",
-          budget: "",
-          timeframe: "",
-          contract: "",
-          details: "",
-        });
+        Client: ${form.fullname}
+
+        Email: ${form.email}
+
+        Service: ${form.service}
+
+        Budget: ${form.budget}
+
+        Timeframe: ${form.timeframe}
+
+        Contract: ${form.contract}
+
+        Details: ${form.details}
+        `,
+        }),
+      }
+    );
+
+      if (error) {
+
+        console.log(error);
+
+        alert("Something went wrong ❌");
 
       } else {
 
-        alert("Something went wrong ❌");
+        alert("Project Request Sent Successfully ✅");
+
+        // GO TO DASHBOARD
+        window.location.href = "/dashboard";
 
       }
 
@@ -121,6 +206,48 @@ export default function RequestPage() {
               Contact
             </a>
 
+            {user ? (
+
+              <>
+
+                <a
+                  href="/dashboard"
+                  className="hover:text-orange-400 transition"
+                >
+                  Dashboard
+                </a>
+
+                <button
+                  onClick={handleLogout}
+                  className="border border-white/10 px-5 py-3 rounded-xl hover:border-red-500 transition"
+                >
+                  Logout
+                </button>
+
+              </>
+
+            ) : (
+
+              <>
+
+                <a
+                  href="/login"
+                  className="border border-white/10 px-5 py-3 rounded-xl hover:border-orange-500 transition"
+                >
+                  Login
+                </a>
+
+                <a
+                  href="/signup"
+                  className="bg-orange-500 text-black px-5 py-3 rounded-xl font-bold"
+                >
+                  Sign Up
+                </a>
+
+              </>
+
+            )}
+
           </div>
 
           {/* RIGHT SIDE */}
@@ -133,7 +260,6 @@ export default function RequestPage() {
               Start Project
             </a>
 
-            {/* MOBILE BUTTON */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="lg:hidden w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center text-2xl"
@@ -176,12 +302,47 @@ export default function RequestPage() {
                 Contact
               </a>
 
-              <a
-                href="/request"
-                className="bg-orange-500 text-black px-5 py-4 rounded-xl font-bold text-center"
-              >
-                Start Project
-              </a>
+              {user ? (
+
+                <>
+
+                  <a
+                    href="/dashboard"
+                    className="hover:text-orange-400"
+                  >
+                    Dashboard
+                  </a>
+
+                  <button
+                    onClick={handleLogout}
+                    className="border border-white/10 px-5 py-3 rounded-xl hover:border-red-500 transition"
+                  >
+                    Logout
+                  </button>
+
+                </>
+
+              ) : (
+
+                <>
+
+                  <a
+                    href="/login"
+                    className="border border-white/10 px-5 py-3 rounded-xl hover:border-orange-500 transition"
+                  >
+                    Login
+                  </a>
+
+                  <a
+                    href="/signup"
+                    className="bg-orange-500 text-black px-5 py-3 rounded-xl font-bold"
+                  >
+                    Sign Up
+                  </a>
+
+                </>
+
+              )}
 
             </div>
 
@@ -225,7 +386,6 @@ export default function RequestPage() {
             className="bg-white/5 border border-white/10 rounded-[40px] p-10 md:p-14 space-y-8"
           >
 
-            {/* FULL NAME + EMAIL */}
             <div className="grid md:grid-cols-2 gap-6">
 
               <input
@@ -233,7 +393,7 @@ export default function RequestPage() {
                 value={form.fullname}
                 placeholder="Full Name"
                 required
-                className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 outline-none focus:border-orange-500 transition"
+                className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 outline-none"
                 onChange={(e) =>
                   setForm({ ...form, fullname: e.target.value })
                 }
@@ -244,7 +404,7 @@ export default function RequestPage() {
                 value={form.email}
                 placeholder="Gmail Address"
                 required
-                className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 outline-none focus:border-orange-500 transition"
+                className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 outline-none"
                 onChange={(e) =>
                   setForm({ ...form, email: e.target.value })
                 }
@@ -252,114 +412,87 @@ export default function RequestPage() {
 
             </div>
 
-            {/* SERVICE */}
-            <div>
+            <select
+              required
+              value={form.service}
+              className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 text-white"
+              onChange={(e) =>
+                setForm({ ...form, service: e.target.value })
+              }
+            >
 
-              <p className="text-gray-400 text-sm mb-3">
-                Select Service
-              </p>
+              <option value="">Choose Service</option>
+
+              <option>Web Development</option>
+
+              <option>Trading Bot</option>
+
+              <option>Telegram Bot</option>
+
+              <option>Automation</option>
+
+              <option>Dashboard</option>
+
+              <option>UI/UX Design</option>
+
+            </select>
+
+            <div className="grid md:grid-cols-2 gap-6">
 
               <select
                 required
-                value={form.service}
-                className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 outline-none focus:border-orange-500 transition text-white"
+                value={form.budget}
+                className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 text-white"
                 onChange={(e) =>
-                  setForm({ ...form, service: e.target.value })
+                  setForm({ ...form, budget: e.target.value })
                 }
               >
 
-                <option value="">Choose Service</option>
+                <option value="">Select Budget</option>
 
-                <option>Web Development</option>
+                <option>$500 - $1,000</option>
 
-                <option>Trading Bot</option>
+                <option>$1,000 - $3,000</option>
 
-                <option>Telegram Bot</option>
+                <option>$3,000 - $5,000</option>
 
-                <option>Automation</option>
+                <option>$5,000 - $10,000</option>
 
-                <option>Dashboard</option>
+                <option>$10,000 - $20,000</option>
 
-                <option>UI/UX Design</option>
+                <option>$20,000+</option>
+
+              </select>
+
+              <select
+                required
+                value={form.timeframe}
+                className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 text-white"
+                onChange={(e) =>
+                  setForm({ ...form, timeframe: e.target.value })
+                }
+              >
+
+                <option value="">Select Timeline</option>
+
+                <option>1-2 Weeks</option>
+
+                <option>2-4 Weeks</option>
+
+                <option>1-2 Months</option>
+
+                <option>2-4 Months</option>
+
+                <option>Ongoing</option>
 
               </select>
 
             </div>
 
-            {/* BUDGET + TIMELINE */}
-            <div className="grid md:grid-cols-2 gap-6">
-
-              <div>
-
-                <p className="text-gray-400 text-sm mb-3">
-                  Budget Range
-                </p>
-
-                <select
-                  required
-                  value={form.budget}
-                  className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 outline-none focus:border-orange-500 transition text-white"
-                  onChange={(e) =>
-                    setForm({ ...form, budget: e.target.value })
-                  }
-                >
-
-                  <option value="">Select Budget</option>
-
-                  <option>$500 - $1,000</option>
-
-                  <option>$1,000 - $3,000</option>
-
-                  <option>$3,000 - $5,000</option>
-
-                  <option>$5,000 - $10,000</option>
-
-                  <option>$10,000 - $20,000</option>
-
-                  <option>$20,000+</option>
-
-                </select>
-
-              </div>
-
-              <div>
-
-                <p className="text-gray-400 text-sm mb-3">
-                  Expected Timeline
-                </p>
-
-                <select
-                  required
-                  value={form.timeframe}
-                  className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 outline-none focus:border-orange-500 transition text-white"
-                  onChange={(e) =>
-                    setForm({ ...form, timeframe: e.target.value })
-                  }
-                >
-
-                  <option value="">Select Timeline</option>
-
-                  <option>1-2 Weeks</option>
-
-                  <option>2-4 Weeks</option>
-
-                  <option>1-2 Months</option>
-
-                  <option>2-4 Months</option>
-
-                  <option>Ongoing</option>
-
-                </select>
-
-              </div>
-
-            </div>
-
-            {/* CONTRACT */}
             <select
               required
               value={form.contract}
-              className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 outline-none focus:border-orange-500 transition text-white"
+              className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 text-white"
               onChange={(e) =>
                 setForm({ ...form, contract: e.target.value })
               }
@@ -373,19 +506,17 @@ export default function RequestPage() {
 
             </select>
 
-            {/* DETAILS */}
             <textarea
               rows="8"
               value={form.details}
               placeholder="Tell me about your project..."
               required
-              className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 outline-none focus:border-orange-500 transition"
+              className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-6 py-5 outline-none"
               onChange={(e) =>
                 setForm({ ...form, details: e.target.value })
               }
             ></textarea>
 
-            {/* BUTTON */}
             <button
               disabled={loading}
               className="w-full bg-orange-500 text-black py-6 rounded-2xl font-black text-lg hover:scale-[1.02] transition disabled:opacity-50"
@@ -419,4 +550,5 @@ export default function RequestPage() {
     </main>
 
   );
+
 }
