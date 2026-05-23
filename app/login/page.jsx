@@ -26,7 +26,7 @@ export default function LoginPage() {
 
     } else {
 
-      router.push("/");
+      router.push("/dashboard");
 
     }
 

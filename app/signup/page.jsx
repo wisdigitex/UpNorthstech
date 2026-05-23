@@ -57,9 +57,11 @@ export default function SignupPage() {
 
       }
 
-      alert("Account Created Successfully ✅");
+    alert(
+      "Account Created Successfully ✅ Please check your email to confirm your account."
+    );
 
-      router.push("/login");
+    router.push("/login");
 
     } catch (err) {
 

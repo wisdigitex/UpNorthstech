@@ -20,6 +20,7 @@ export default function AdminPage() {
 
   const [deliveryDays, setDeliveryDays] = useState({});
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [messageUsers, setMessageUsers] = useState([]);
 
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
@@ -97,6 +98,31 @@ export default function AdminPage() {
       ];
 
       setUsersCount(uniqueUsers.length);
+
+      const { data: messagesUsersData } = await supabase
+        .from("messages")
+        .select("user_email, created_at")
+        .eq("sender", "client")
+        .order("created_at", { ascending: false });
+
+      if (messagesUsersData) {
+        const uniqueMessageUsers = [
+          ...new Map(
+            messagesUsersData.map((msg) => [
+              msg.user_email,
+              {
+                id: msg.user_email,
+                user_id: msg.user_email,
+                email: msg.user_email,
+                fullname: msg.user_email?.split("@")[0],
+                service: "General Message",
+              },
+            ])
+          ).values(),
+        ];
+
+        setMessageUsers(uniqueMessageUsers);
+      }
 
     }
 
@@ -376,7 +402,7 @@ async function markDelivered(id) {
 async function handleSendMessage() {
   if (!message.trim()) return;
 
-  if (!selectedProject) {
+  if (!selectedProject?.email) {
     alert("Select a client first");
     return;
   }
@@ -554,7 +580,7 @@ async function handleSendMessage() {
                 "user_email",
                 user.email
               )
-              .eq("sender", "admin");
+              .eq("sender", "client");
 
           }}
           className={`w-full text-left px-5 py-4 rounded-2xl transition ${
@@ -1362,11 +1388,14 @@ async function handleSendMessage() {
 
         <div className="p-4 space-y-4">
 
-          {[
-            ...new Map(
-              projects.map((p) => [p.user_id, p])
-            ).values(),
-          ].map((project) => (
+        {[
+          ...new Map(
+            [...projects, ...messageUsers].map((p) => [
+              p.email,
+              p,
+            ])
+          ).values(),
+        ].map((project) => (
 
             <button
               key={project.id}
