@@ -1482,6 +1482,23 @@ return (
                     message: msg,
                   });
                 }}
+                onTouchStart={(e) => {
+                    const touch = e.touches[0];
+
+                    const timer = setTimeout(() => {
+                      setContextMenu({
+                        x: touch.clientX,
+                        y: touch.clientY,
+                        message: msg,
+                      });
+                    }, 600);
+
+                    e.currentTarget.dataset.timer = timer;
+                  }}
+
+                  onTouchEnd={(e) => {
+                    clearTimeout(e.currentTarget.dataset.timer);
+                  }}
                 className={`px-6 py-5 rounded-3xl ${
                 msg.sender === "client"
                   ? "bg-orange-500 text-black rounded-tr-md"

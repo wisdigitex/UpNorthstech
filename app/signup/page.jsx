@@ -41,9 +41,10 @@ export default function SignupPage() {
 
         options: {
 
-          data: {
-            fullname: form.fullname,
-          },
+        data: {
+          full_name: form.fullname,
+          fullname: form.fullname,
+        },
 
         },
 
