@@ -571,6 +571,7 @@ async function handleSendMessage() {
           onClick={async () => {
 
             setActiveTab("messages");
+            setSidebarOpen(false);
 
             setUnreadMessages(0);
 
