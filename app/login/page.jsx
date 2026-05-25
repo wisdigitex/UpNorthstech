@@ -32,6 +32,17 @@ export default function LoginPage() {
 
   }
 
+  async function handleGoogleLogin() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${window.location.origin}/dashboard`,
+    },
+  });
+
+  if (error) alert(error.message);
+}
+
   return (
 
     <main className="min-h-screen bg-[#050816] flex items-center justify-center px-6">
@@ -66,6 +77,20 @@ export default function LoginPage() {
         >
           Login
         </button>
+
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          className="w-full bg-white text-black py-5 rounded-2xl font-black flex items-center justify-center gap-3"
+        >
+          <img
+            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+            alt="Google"
+            className="w-6 h-6"
+          />
+          Continue with Google
+        </button>
+
         <div className="mt-6 text-center">
 
         <a
