@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 
 const services = [
-  "Web Development",
-  "Trading Bots",
-  "Telegram Bots",
-  "Web Applications",
-  "UI/UX Design",
-  "Automation & API",
+  "Website Development",
+  "Web App Development",
+  "Trading Bot Development",
+  "Telegram Bot Automation",
+  "Business Automation",
+  "UI/UX & Brand Design",
 ];
 
 const skills = [
@@ -59,6 +59,7 @@ export default function Home() {
 
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [cms, setCms] = useState(null);
 
   // CHECK LOGGED IN USER
   useEffect(() => {
@@ -80,6 +81,20 @@ export default function Home() {
 
   }, []);
 
+useEffect(() => {
+  async function loadCMS() {
+    const { data } = await supabase
+      .from("site_content")
+      .select("*")
+      .eq("section", "home")
+      .single();
+
+    if (data) setCms(data.content);
+  }
+
+  loadCMS();
+}, []);
+
   // LOGOUT
   async function handleLogout() {
 
@@ -98,11 +113,8 @@ export default function Home() {
     const formData = {
       fullname: e.target.fullname.value,
       email: e.target.email.value,
-      service: e.target.service.value,
-      budget: e.target.budget.value,
-      timeframe: e.target.timeframe.value,
-      contract: e.target.contract.value,
-      details: e.target.details.value,
+      subject: e.target.subject.value,
+      message: e.target.message.value,
     };
 
     try {
@@ -138,15 +150,15 @@ export default function Home() {
     <main className="bg-[#050816] text-white overflow-hidden">
       {/* NAVBAR */}
       <nav className="fixed top-0 left-0 w-full z-50 bg-[#050816]/90 backdrop-blur-xl border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 lg:px-0 py-5 flex items-center justify-between">
           {/* LOGO */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-black font-black">
-              U
-            </div>
-
-            <h1 className="text-2xl font-black">UpNorth Tech</h1>
-          </div>
+            <a href="/" className="flex items-center">
+              <img
+                src={cms?.logo || "/images/logo.png"}
+                alt={cms?.brandName || "UpNorth Tech"}
+                className="h-14 w-auto object-contain"
+              />
+            </a>
 
           {/* DESKTOP MENU */}
           <div className="hidden lg:flex items-center gap-8 text-sm text-gray-300">
@@ -343,30 +355,32 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center relative z-10">
           <div>
-            <p className="text-orange-400 text-lg mb-5">Hello, I'm 👋</p>
+          <p className="text-orange-400 text-lg mb-5">
+            {cms?.heroSmall || "Digital Agency �"}
+          </p>
 
-            <h1 className="text-7xl md:text-8xl font-black leading-tight mb-8">
-              Web <span className="text-orange-500">Developer.</span>
-            </h1>
+          <h1 className="text-7xl md:text-8xl font-black leading-tight mb-8">
+            {cms?.heroTitle || "We Build Digital Solutions That Scale."}
+          </h1>
 
-            <p className="text-gray-400 text-xl leading-9 max-w-xl mb-10">
-              I build modern websites, bots & automation systems that help
-              businesses grow and scale.
-            </p>
+          <p className="text-gray-400 text-xl leading-9 max-w-xl mb-10">
+            {cms?.heroDescription ||
+              "We help businesses build premium websites, web apps, trading bots, automation systems and scalable digital platforms."}
+          </p>
 
             <div className="flex gap-5 flex-wrap mb-10">
               <a
                 href="/request"
                 className="bg-orange-500 px-8 py-5 rounded-2xl text-black font-bold"
               >
-                Hire Me
+                Start A Project
               </a>
 
               <a
                 href="/projects"
                 className="border border-white/10 px-8 py-5 rounded-2xl"
               >
-                View My Work
+                View Our Work
               </a>
             </div>
 
@@ -402,7 +416,7 @@ export default function Home() {
                 <div className="absolute w-[300px] md:w-[400px] h-[300px] md:h-[400px] bg-orange-500/20 blur-3xl rounded-full"></div>
 
                 <img
-                  src="/images/profile.png"
+                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c"
                   alt="UpNorth Tech"
                   className="
                     relative z-10
@@ -428,11 +442,11 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <p className="text-orange-400 uppercase tracking-[5px] text-sm mb-5">
-              My Services
+              Our Services
             </p>
 
             <h2 className="text-6xl font-black">
-              What I Can Do For You.
+              Digital Services For Your Business.
             </h2>
           </div>
 
@@ -467,11 +481,11 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="mb-16">
             <p className="text-orange-400 uppercase tracking-[5px] text-sm mb-5">
-              My Expertise
+              Our Capabilities
             </p>
 
             <h2 className="text-6xl font-black">
-              Skills & Technologies
+              Trusted Skills & Results
             </h2>
           </div>
 
@@ -498,7 +512,7 @@ export default function Home() {
           <div className="flex justify-between items-end mb-16 flex-wrap gap-5">
             <div>
               <p className="text-orange-400 uppercase tracking-[5px] text-sm mb-5">
-                My Portfolio
+                Our Portfolio
               </p>
 
               <h2 className="text-6xl font-black">
@@ -555,11 +569,11 @@ export default function Home() {
             </p>
 
             <h2 className="text-6xl font-black leading-tight mb-8">
-              Have A Project In Mind?
+              Let’s Build Something Great Together.
             </h2>
 
             <p className="text-gray-400 text-lg leading-9 mb-10">
-              Let's build something amazing together.
+              Tell us what you want to build. Our team will review your request and reply quickly.
             </p>
 
             <div className="space-y-5 text-lg">
@@ -568,128 +582,57 @@ export default function Home() {
               <p>📍 Remote Worldwide</p>
             </div>
           </div>
+{/* FORM */}
+<div className="bg-white/5 border border-white/10 rounded-[40px] p-10">
 
-          {/* FORM */}
-          <div className="bg-white/5 border border-white/10 rounded-[40px] p-10">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <input
-                name="fullname"
-                type="text"
-                placeholder="Full Name"
-                required
-                className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500"
-              />
+  <form
+    onSubmit={handleSubmit}
+    className="space-y-6"
+  >
 
-              <input
-                name="email"
-                type="email"
-                placeholder="Gmail Address"
-                required
-                className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500"
-              />
+    <input
+      name="fullname"
+      type="text"
+      placeholder="Full Name"
+      required
+      className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500"
+    />
 
-              <select
-                name="service"
-                required
-                className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500"
-              >
-                <option value="">Choose Service</option>
+    <input
+      name="email"
+      type="email"
+      placeholder="Email Address"
+      required
+      className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500"
+    />
 
-                <option>Web Development</option>
+    <input
+      name="subject"
+      type="text"
+      placeholder="Subject"
+      required
+      className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500"
+    />
 
-                <option>Trading Bot</option>
+    <textarea
+      name="message"
+      rows="7"
+      placeholder="Tell me about your project..."
+      required
+      className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500 resize-none"
+    ></textarea>
 
-                <option>Telegram Bot</option>
+    <button
+      type="submit"
+      disabled={loading}
+      className="w-full bg-orange-500 py-5 rounded-2xl text-black font-black hover:scale-[1.02] transition disabled:opacity-50"
+    >
+      {loading ? "Sending..." : "Send Message"}
+    </button>
 
-                <option>Automation</option>
+  </form>
 
-                <option>Dashboard</option>
-
-                <option>UI/UX Design</option>
-              </select>
-
-              {/* BUDGET + TIMELINE */}
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <p className="text-gray-400 text-sm mb-3">
-                    Budget Range
-                  </p>
-
-                  <select
-                    name="budget"
-                    required
-                    className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500 text-white"
-                  >
-                    <option value="">Select Budget</option>
-
-                    <option>$500 - $1,000</option>
-
-                    <option>$1,000 - $3,000</option>
-
-                    <option>$3,000 - $5,000</option>
-
-                    <option>$5,000 - $10,000</option>
-
-                    <option>$10,000 - $20,000</option>
-
-                    <option>$20,000+</option>
-                  </select>
-                </div>
-
-                <div>
-                  <p className="text-gray-400 text-sm mb-3">
-                    Expected Timeline
-                  </p>
-
-                  <select
-                    name="timeframe"
-                    required
-                    className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500 text-white"
-                  >
-                    <option value="">Select Timeline</option>
-
-                    <option>1-2 Weeks</option>
-
-                    <option>2-4 Weeks</option>
-
-                    <option>1-2 Months</option>
-
-                    <option>2-4 Months</option>
-
-                    <option>Ongoing</option>
-                  </select>
-                </div>
-              </div>
-
-              <select
-                name="contract"
-                required
-                className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500"
-              >
-                <option value="">Choose Contract Type</option>
-
-                <option>Long Time Contract</option>
-
-                <option>Project Based</option>
-              </select>
-
-              <textarea
-                name="details"
-                rows="6"
-                placeholder="Project Details"
-                required
-                className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500"
-              ></textarea>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-orange-500 py-5 rounded-2xl text-black font-black hover:scale-[1.02] transition disabled:opacity-50"
-              >
-                {loading ? "Sending..." : "Send Request"}
-              </button>
-            </form>
-          </div>
+</div>
         </div>
       </section>
 
@@ -702,7 +645,7 @@ export default function Home() {
             </h2>
 
             <p className="text-gray-400">
-              Building digital solutions that scale.
+              A premium digital agency building websites, apps, bots and automation systems.
             </p>
           </div>
 

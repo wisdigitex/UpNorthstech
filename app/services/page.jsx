@@ -88,17 +88,13 @@ async function handleLogout() {
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
 
           {/* LOGO */}
-          <div className="flex items-center gap-3">
-
-            <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-black font-black">
-              U
-            </div>
-
-            <h1 className="text-2xl font-black">
-              UpNorth Tech
-            </h1>
-
-          </div>
+          <a href="/" className="flex items-center h-14 overflow-visible">
+            <img
+              src="/images/logo.png"
+              alt="UpNorth Tech Logo"
+              className="h-14 w-auto object-contain"
+            />
+          </a>
 
 {/* DESKTOP MENU */}
 <div className="hidden lg:flex items-center gap-8 text-sm text-gray-300">

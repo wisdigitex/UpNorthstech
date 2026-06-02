@@ -42,17 +42,13 @@ export default function ContactPage() {
         <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
 
           {/* LOGO */}
-          <div className="flex items-center gap-3">
-
-            <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center text-black font-black">
-              U
-            </div>
-
-            <h1 className="text-2xl font-black">
-              UpNorth Tech
-            </h1>
-
-          </div>
+          <a href="/" className="flex items-center h-14 overflow-visible">
+            <img
+              src="/images/logo.png"
+              alt="UpNorth Tech Logo"
+              className="h-14 w-auto object-contain"
+            />
+          </a>
 
     {/* DESKTOP MENU */}
     <div className="hidden lg:flex items-center gap-8 text-sm text-gray-300">
@@ -248,7 +244,7 @@ export default function ContactPage() {
           </h1>
 
           <p className="text-gray-400 text-xl leading-9 max-w-4xl mx-auto mb-12">
-            Have a project in mind? Let’s discuss your ideas and create premium
+            Let’s Build Something Great Together. Let’s discuss your ideas and create premium
             digital solutions that help your business grow.
           </p>
         </div>
@@ -319,50 +315,38 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* FORM */}
-          <div className="bg-white/5 border border-white/10 rounded-[40px] p-10">
-<form
-  onSubmit={async (e) => {
+{/* FORM */}
+<div className="bg-white/5 border border-white/10 rounded-[40px] p-10">
+  <form
+    onSubmit={async (e) => {
+      e.preventDefault();
 
-    e.preventDefault();
+      const formData = {
+        fullname: e.target.fullname.value,
+        email: e.target.email.value,
+        subject: e.target.subject.value,
+        message: e.target.message.value,
+      };
 
-    const formData = {
-      fullname: e.target.fullname.value,
-      email: e.target.email.value,
-      subject: e.target.subject.value,
-      service: e.target.service.value,
-      budget: e.target.budget.value,
-      timeframe: e.target.timeframe.value,
-      details: e.target.details.value,
-    };
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    const response = await fetch("/api/contact", {
-      method: "POST",
+      const data = await response.json();
 
-      headers: {
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify(formData),
-    });
-
-    const data = await response.json();
-
-    if(data.success){
-      alert("Message Sent Successfully ✅");
-      e.target.reset();
-    }else{
-      alert("Something went wrong ❌");
-    }
-
-  }}
-
-  className="space-y-6"
->
-
-  {/* NAME + EMAIL */}
-  <div className="grid md:grid-cols-2 gap-5">
-
+      if (data.success) {
+        alert("Message Sent Successfully ✅");
+        e.target.reset();
+      } else {
+        alert("Something went wrong ❌");
+      }
+    }}
+    className="space-y-6"
+  >
     <input
       name="fullname"
       type="text"
@@ -374,129 +358,35 @@ export default function ContactPage() {
     <input
       name="email"
       type="email"
-      placeholder="Gmail Address"
+      placeholder="Email Address"
       required
       className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500"
     />
 
-  </div>
-
-  {/* SUBJECT */}
-  <input
-    name="subject"
-    type="text"
-    placeholder="Subject"
-    required
-    className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500"
-  />
-
-  {/* SERVICE */}
-  <div>
-    <p className="text-gray-400 text-sm mb-3">
-      Service
-    </p>
-
-    <select
-      name="service"
+    <input
+      name="subject"
+      type="text"
+      placeholder="Subject"
       required
-      className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500 text-white"
+      className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500"
+    />
+
+    <textarea
+      name="message"
+      rows="7"
+      placeholder="Write your message..."
+      required
+      className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500 resize-none"
+    ></textarea>
+
+    <button
+      type="submit"
+      className="w-full bg-orange-500 py-5 rounded-2xl text-black font-black text-lg hover:scale-[1.02] transition"
     >
-
-      <option value="">Choose Service</option>
-
-      <option>Web Development</option>
-
-      <option>Trading Bot</option>
-
-      <option>Telegram Bot</option>
-
-      <option>Automation</option>
-
-      <option>Dashboard</option>
-
-      <option>UI/UX Design</option>
-
-    </select>
-  </div>
-
-  {/* BUDGET + TIMELINE */}
-  <div className="grid md:grid-cols-2 gap-6">
-
-    <div>
-      <p className="text-gray-400 text-sm mb-3">
-        Budget Range
-      </p>
-
-      <select
-        name="budget"
-        required
-        className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500 text-white"
-      >
-
-        <option value="">Select Budget</option>
-
-        <option>$500 - $1,000</option>
-
-        <option>$1,000 - $3,000</option>
-
-        <option>$3,000 - $5,000</option>
-
-        <option>$5,000 - $10,000</option>
-
-        <option>$10,000 - $20,000</option>
-
-        <option>$20,000+</option>
-
-      </select>
-    </div>
-
-    <div>
-      <p className="text-gray-400 text-sm mb-3">
-        Expected Timeline
-      </p>
-
-      <select
-        name="timeframe"
-        required
-        className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500 text-white"
-      >
-
-        <option value="">Select Timeline</option>
-
-        <option>1-2 Weeks</option>
-
-        <option>2-4 Weeks</option>
-
-        <option>1-2 Months</option>
-
-        <option>2-4 Months</option>
-
-        <option>Ongoing</option>
-
-      </select>
-    </div>
-
-  </div>
-
-  {/* MESSAGE */}
-  <textarea
-    name="details"
-    rows="7"
-    placeholder="Tell me about your project"
-    required
-    className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-5 outline-none focus:border-orange-500"
-  ></textarea>
-
-  {/* BUTTON */}
-  <button
-    type="submit"
-    className="w-full bg-orange-500 py-5 rounded-2xl text-black font-black text-lg hover:scale-[1.02] transition"
-  >
-    Send Message
-  </button>
-
-</form>
-          </div>
+      Send Message
+    </button>
+  </form>
+</div>
         </div>
       </section>
 

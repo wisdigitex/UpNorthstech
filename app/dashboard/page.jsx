@@ -451,11 +451,67 @@ async function handleSendMessage() {
   }
 
 }
-function handleChoosePlan(plan) {
+async function handleChoosePlan(plan) {
+  if (!user?.email) {
+    alert("Please login first");
+    router.push("/login");
+    return;
+  }
 
-  alert(`You selected the ${plan} plan`);
+  const planData = {
+    Starter: {
+      service: "Starter Website Package",
+      budget: "$500",
+      timeframe: "1-2 Weeks",
+    },
+    Premium: {
+      service: "Premium Web App Package",
+      budget: "$2,500",
+      timeframe: "2-4 Weeks",
+    },
+    Enterprise: {
+      service: "Enterprise Custom Package",
+      budget: "Custom",
+      timeframe: "Custom",
+    },
+  };
 
+  const selected = planData[plan];
+
+  const confirmOrder = confirm(
+    `Submit request for ${plan} plan?\n\nBudget: ${selected.budget}`
+  );
+
+  if (!confirmOrder) return;
+
+  const { error } = await supabase
+    .from("project_requests")
+    .insert([
+      {
+        user_id: user.id,
+        fullname:
+          user.user_metadata?.fullname ||
+          user.user_metadata?.full_name ||
+          user.email.split("@")[0],
+        email: user.email,
+        service: selected.service,
+        budget: selected.budget,
+        timeframe: selected.timeframe,
+        contract: "Project Based",
+        details: `Client selected the ${plan} package from dashboard offers.`,
+        status: "Pending",
+      },
+    ]);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  alert("Offer sent to admin successfully ✅");
+  setActiveTab("projects");
 }
+
 
     async function approveProject(id) {
 
@@ -576,25 +632,13 @@ return (
             {/* TOP */}
             <div className="flex items-center justify-between mb-10">
 
-              <div className="flex items-center gap-3">
-
-                <div className="w-12 h-12 rounded-xl bg-orange-500 flex items-center justify-center text-black font-black">
-                  U
-                </div>
-
-                <div>
-
-                  <h2 className="text-2xl font-black">
-                    UpNorth
-                  </h2>
-
-                  <p className="text-gray-400 text-sm">
-                    Dashboard
-                  </p>
-
-                </div>
-
-              </div>
+          <a href="/" className="flex items-center h-14 overflow-visible">
+            <img
+              src="/images/logo.png"
+              alt="UpNorth Tech Logo"
+              className="h-32 w-auto object-contain scale-[1.4] origin-left"
+            />
+          </a>
 
               <button
                 onClick={() => setMenuOpen(false)}
@@ -737,26 +781,13 @@ return (
       {/* DESKTOP SIDEBAR */}
       <aside className="w-[290px] hidden lg:flex flex-col border-r border-white/10 bg-[#0B1120] p-8 h-screen sticky top-0 overflow-y-auto">
 
-        {/* LOGO */}
-        <div className="flex items-center gap-4 mb-16">
-
-          <div className="w-14 h-14 rounded-2xl bg-orange-500 flex items-center justify-center text-black text-2xl font-black">
-            U
-          </div>
-
-          <div>
-
-            <h1 className="text-3xl font-black">
-              UpNorth
-            </h1>
-
-            <p className="text-gray-400 text-sm">
-              Client Dashboard
-            </p>
-
-          </div>
-
-        </div>
+          <a href="/" className="flex items-center h-14 overflow-visible">
+            <img
+              src="/images/logo.png"
+              alt="UpNorth Tech Logo"
+              className="h-14 w-auto object-contain"
+            />
+          </a>
 
         {/* USER */}
         <div className="bg-white/5 border border-white/10 rounded-3xl p-5 mb-10">

@@ -36,6 +36,44 @@ export default function AdminPage() {
     const [contextMenu, setContextMenu] =
   useState(null);
 
+  const [cms, setCms] = useState({
+  brandName: "",
+  logo: "",
+  heroSmall: "",
+  heroTitle: "",
+  heroDescription: "",
+  aboutTitle: "",
+  aboutText: "",
+  contactEmail: "",
+  phone: "",
+  location: "",
+});
+
+const [settings, setSettings] = useState({
+  siteName: "UpNorth Tech",
+  siteEmail: "info@upnorthstech.com",
+  sitePhone: "+2347035001858",
+  adminName: "Admin",
+  adminEmail: "sulaimonganiyu315@gmail.com",
+});
+
+useEffect(() => {
+  const saved = localStorage.getItem("adminSettings");
+
+  if (saved) {
+    setSettings(JSON.parse(saved));
+  }
+}, []);
+
+function handleSaveSettings() {
+  localStorage.setItem(
+    "adminSettings",
+    JSON.stringify(settings)
+  );
+
+  alert("Settings saved successfully ✅");
+}
+
   /*
   ========================================
   LOAD ADMIN
@@ -128,6 +166,16 @@ export default function AdminPage() {
       }
 
     }
+
+    const { data: cmsData } = await supabase
+  .from("site_content")
+  .select("*")
+  .eq("section", "home")
+  .single();
+
+if (cmsData) {
+  setCms(cmsData.content);
+}
 
     setLoading(false);
 
@@ -464,6 +512,23 @@ async function handleSendMessage() {
   setReplyTo(null);
 }
 
+async function handleSaveCMS() {
+  const { error } = await supabase
+    .from("site_content")
+    .update({
+      content: cms,
+      updated_at: new Date(),
+    })
+    .eq("section", "home");
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  alert("Website content saved successfully ✅");
+}
+
 
   async function handleLogout() {
 
@@ -612,23 +677,33 @@ async function handleSendMessage() {
 
         </button>
 
-          <button
-  onClick={() => {
-    setSidebarOpen(false);
-  }}
-  className="w-full hover:bg-white/5 px-5 py-4 rounded-2xl text-left transition"
->
-            Website CMS
-          </button>
+        <button
+          onClick={() => {
+            setActiveTab("websiteCMS");
+            setSidebarOpen(false);
+          }}
+          className={`w-full px-5 py-4 rounded-2xl text-left transition ${
+            activeTab === "websiteCMS"
+              ? "bg-orange-500 text-black font-bold"
+              : "hover:bg-white/5"
+          }`}
+        >
+          Website CMS
+        </button>
 
-          <button
-  onClick={() => {
-    setSidebarOpen(false);
-  }}
-  className="w-full hover:bg-white/5 px-5 py-4 rounded-2xl text-left transition"
->
-            Settings
-          </button>
+        <button
+          onClick={() => {
+            setActiveTab("settings");
+            setSidebarOpen(false);
+          }}
+          className={`w-full px-5 py-4 rounded-2xl text-left transition ${
+            activeTab === "settings"
+              ? "bg-orange-500 text-black font-bold"
+              : "hover:bg-white/5"
+          }`}
+        >
+          Settings
+        </button>
 
         </div>
 
@@ -1767,10 +1842,227 @@ async function handleSendMessage() {
 
 )}
 
-        </div>
+{activeTab === "websiteCMS" && (
+  <div className="space-y-10">
+    <div>
+      <h2 className="text-5xl font-black mb-3">
+        Website CMS
+      </h2>
+      <p className="text-gray-400">
+        Manage homepage content, hero text, services, contact info and website sections.
+      </p>
+    </div>
 
+    <div className="grid lg:grid-cols-2 gap-8">
+      <div className="bg-white/5 border border-white/10 rounded-[32px] p-8">
+        <h3 className="text-3xl font-black mb-6">
+          Hero Section
+        </h3>
+
+<div className="space-y-5">
+  <input
+    value={cms.brandName}
+    onChange={(e) =>
+      setCms({ ...cms, brandName: e.target.value })
+    }
+    placeholder="Brand Name"
+    className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none"
+  />
+
+  <input
+    value={cms.logo}
+    onChange={(e) =>
+      setCms({ ...cms, logo: e.target.value })
+    }
+    placeholder="/images/logo.png"
+    className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none"
+  />
+
+  <input
+    value={cms.heroSmall}
+    onChange={(e) =>
+      setCms({ ...cms, heroSmall: e.target.value })
+    }
+    placeholder="Hero small title"
+    className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none"
+  />
+
+  <input
+    value={cms.heroTitle}
+    onChange={(e) =>
+      setCms({ ...cms, heroTitle: e.target.value })
+    }
+    placeholder="Main hero title"
+    className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none"
+  />
+
+  <textarea
+    rows="5"
+    value={cms.heroDescription}
+    onChange={(e) =>
+      setCms({ ...cms, heroDescription: e.target.value })
+    }
+    placeholder="Hero description"
+    className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none"
+  />
+</div>
       </div>
 
+      <div className="bg-white/5 border border-white/10 rounded-[32px] p-8">
+        <h3 className="text-3xl font-black mb-6">
+          Contact Info
+        </h3>
+
+        <div className="space-y-5">
+          <input
+            placeholder="Business Email"
+            className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none"
+          />
+
+          <input
+            placeholder="Phone Number"
+            className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none"
+          />
+
+          <input
+            placeholder="Location"
+            className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div className="bg-white/5 border border-white/10 rounded-[32px] p-8">
+      <h3 className="text-3xl font-black mb-6">
+        Services Section
+      </h3>
+
+      <div className="grid md:grid-cols-2 gap-5">
+        <input className="bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none" defaultValue="Web Development" />
+        <input className="bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none" defaultValue="Trading Bots" />
+        <input className="bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none" defaultValue="Telegram Bots" />
+        <input className="bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none" defaultValue="Automation & API" />
+      </div>
+    </div>
+
+<button
+  onClick={handleSaveCMS}
+  className="w-full bg-orange-500 text-black py-5 rounded-2xl font-black hover:scale-[1.01] transition"
+>
+  Save Website Content
+</button>
+  </div>
+)}
+
+{activeTab === "settings" && (
+  <div className="space-y-10">
+    <div>
+      <h2 className="text-5xl font-black mb-3">Settings</h2>
+      <p className="text-gray-400">
+        Manage website, account, notification and system settings.
+      </p>
+    </div>
+
+    <div className="grid lg:grid-cols-2 gap-8">
+      <div className="bg-white/5 border border-white/10 rounded-[32px] p-8">
+        <h3 className="text-3xl font-black mb-6">Website Settings</h3>
+
+        <div className="space-y-5">
+          <input
+            value={settings.siteName}
+            onChange={(e) =>
+              setSettings({
+                ...settings,
+                siteName: e.target.value,
+              })
+            }
+            className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none"
+          />
+          <input
+            value={settings.siteEmail}
+            onChange={(e) =>
+              setSettings({
+                ...settings,
+                siteEmail: e.target.value,
+              })
+            }
+            className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none"
+          />
+          <input
+            value={settings.sitePhone}
+            onChange={(e) =>
+              setSettings({
+                ...settings,
+                sitePhone: e.target.value,
+              })
+            }
+            className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none"
+          />
+        </div>
+      </div>
+
+      <div className="bg-white/5 border border-white/10 rounded-[32px] p-8">
+        <h3 className="text-3xl font-black mb-6">Admin Account</h3>
+
+        <div className="space-y-5">
+          <input
+            value={settings.adminName}
+            onChange={(e) =>
+              setSettings({
+                ...settings,
+                adminName: e.target.value,
+              })
+            }
+            className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none"
+          />
+          <input
+            value={settings.adminEmail}
+            onChange={(e) =>
+              setSettings({
+                ...settings,
+                adminEmail: e.target.value,
+              })
+            }
+            className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div className="bg-white/5 border border-white/10 rounded-[32px] p-8">
+      <h3 className="text-3xl font-black mb-6">Notification Settings</h3>
+
+      <div className="space-y-4">
+        <label className="flex items-center justify-between bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4">
+          <span>Email notification for new messages</span>
+          <input type="checkbox" defaultChecked />
+        </label>
+
+        <label className="flex items-center justify-between bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4">
+          <span>Email notification for new project requests</span>
+          <input type="checkbox" defaultChecked />
+        </label>
+
+        <label className="flex items-center justify-between bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4">
+          <span>Client signup alerts</span>
+          <input type="checkbox" defaultChecked />
+        </label>
+      </div>
+    </div>
+
+    <button
+      onClick={handleSaveSettings}
+      className="w-full bg-orange-500 text-black py-5 rounded-2xl font-black hover:scale-[1.01] transition"
+    >
+      Save Settings
+    </button>
+  </div>
+)}
+
+
+
+        </div>
+      </div>
     </main>
 
   );
