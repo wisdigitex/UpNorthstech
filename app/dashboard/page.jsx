@@ -61,6 +61,8 @@ export default function DashboardPage() {
 
   const [replyTo, setReplyTo] =
     useState(null);
+
+  const [uploadingFile, setUploadingFile] = useState(false);
     
     const [contextMenu, setContextMenu] =
   useState(null);
@@ -451,6 +453,52 @@ async function handleSendMessage() {
   }
 
 }
+
+async function handleFileUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  setUploadingFile(true);
+
+  const filePath = `${user.email}/${Date.now()}-${file.name}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("chat-files")
+    .upload(filePath, file);
+
+  if (uploadError) {
+    alert(uploadError.message);
+    setUploadingFile(false);
+    return;
+  }
+
+  const { data } = supabase.storage
+    .from("chat-files")
+    .getPublicUrl(filePath);
+
+  const fileUrl = data.publicUrl;
+
+  const { error } = await supabase.from("messages").insert([
+    {
+      project_id: selectedProject?.id || null,
+      sender: "client",
+      user_email: user.email,
+      message: file.name,
+      file_url: fileUrl,
+      file_name: file.name,
+      file_type: file.type,
+      reply_to: replyTo?.id || null,
+      is_read: false,
+    },
+  ]);
+
+  if (error) {
+    alert(error.message);
+  }
+
+  setUploadingFile(false);
+}
+
 async function handleChoosePlan(plan) {
   if (!user?.email) {
     alert("Please login first");
@@ -511,6 +559,8 @@ async function handleChoosePlan(plan) {
   alert("Offer sent to admin successfully ✅");
   setActiveTab("projects");
 }
+
+
 
 
     async function approveProject(id) {
@@ -1579,8 +1629,17 @@ return (
             </div>
           )}
 
-<p>{msg.message}</p>
+        <p>{msg.message}</p>
               
+              {msg.file_url && (
+              <a
+                href={msg.file_url}
+                target="_blank"
+                className="block mt-3 underline font-bold"
+              >
+                📎 {msg.file_name || "Download file"}
+              </a>
+            )}
 
             </div>
             {msg.edited && !msg.deleted && (
@@ -1683,6 +1742,15 @@ return (
       <div className="border-t border-white/10 p-5 shrink-0">
 
         <div className="flex gap-3 items-center">
+
+        <label className="bg-[#0F172A] border border-white/10 px-5 py-4 rounded-2xl cursor-pointer">
+  📎
+          <input
+            type="file"
+            hidden
+            onChange={handleFileUpload}
+          />
+        </label>
 
           <input
             type="text"
