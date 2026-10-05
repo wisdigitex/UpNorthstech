@@ -423,7 +423,7 @@ useEffect(() => {
 
           <div className="space-y-4 text-base md:text-lg">
             <p>📧 info@upnorthstech.com</p>
-            <p>📞 +2347035001858</p>
+            <p>📞 +44 7508214720</p>
             <p>📍 Remote Worldwide</p>
           </div>
         </div>

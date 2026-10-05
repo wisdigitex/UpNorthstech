@@ -33,7 +33,7 @@ export default function AdminSettingsPage() {
 
               <input
                 placeholder="Phone Number"
-                defaultValue="+2347035001858"
+                defaultValue="+44 7508214720"
                 className="w-full bg-[#0F172A] border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-orange-500"
               />
             </div>
