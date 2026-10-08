@@ -20,29 +20,7 @@ export default function RequestPage() {
     details: "",
   });
 
-  // CHECK USER
-  useEffect(() => {
 
-    async function getUser() {
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-
-
-      // AUTO FILL USER INFO
-      setForm((prev) => ({
-        ...prev,
-        fullname: user.user_metadata?.full_name || "",
-        email: user.email || "",
-      }));
-
-    }
-
-    getUser();
-
-  }, []);
 
 
 
