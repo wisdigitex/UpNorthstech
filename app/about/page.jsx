@@ -6,7 +6,6 @@ import { supabase } from "../../lib/supabase";
 export default function AboutPage() {
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
   useEffect(() => {
 
   async function getUser() {
@@ -22,13 +21,7 @@ export default function AboutPage() {
   getUser();
 
 }, []);
-async function handleLogout() {
 
-  await supabase.auth.signOut();
-
-  window.location.href = "/";
-
-}
 
   return (
     <main className="bg-[#050816] text-white min-h-screen overflow-hidden">
@@ -74,49 +67,6 @@ async function handleLogout() {
               Contact
             </a>
 
-            {/* AUTH */}
-
-            {user ? (
-
-              <>
-
-                <a
-                  href="/dashboard"
-                  className="hover:text-orange-400 transition"
-                >
-                  Dashboard
-                </a>
-
-                <button
-                  onClick={handleLogout}
-                  className="border border-white/10 px-5 py-3 rounded-xl hover:border-red-500 transition"
-                >
-                  Logout
-                </button>
-
-              </>
-
-            ) : (
-
-              <>
-
-                <a
-                  href="/login"
-                  className="border border-white/10 px-5 py-3 rounded-xl hover:border-orange-500 transition"
-                >
-                  Login
-                </a>
-
-                <a
-                  href="/signup"
-                  className="bg-orange-500 text-black px-5 py-3 rounded-xl font-bold"
-                >
-                  Sign Up
-                </a>
-
-              </>
-
-            )}
 
           </div>
 
@@ -173,49 +123,6 @@ async function handleLogout() {
                 Contact
               </a>
 
-              {/* AUTH */}
-
-              {user ? (
-
-                <>
-
-                  <a
-                    href="/dashboard"
-                    className="hover:text-orange-400"
-                  >
-                    Dashboard
-                  </a>
-
-                  <button
-                    onClick={handleLogout}
-                    className="border border-white/10 px-5 py-3 rounded-xl hover:border-red-500 transition"
-                  >
-                    Logout
-                  </button>
-
-                </>
-
-              ) : (
-
-                <>
-
-                  <a
-                    href="/login"
-                    className="border border-white/10 px-5 py-3 rounded-xl hover:border-orange-500 transition"
-                  >
-                    Login
-                  </a>
-
-                  <a
-                    href="/signup"
-                    className="bg-orange-500 text-black px-5 py-3 rounded-xl font-bold"
-                  >
-                    Sign Up
-                  </a>
-
-                </>
-
-              )}
 
               <a
                 href="/request"

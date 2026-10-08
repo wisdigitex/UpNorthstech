@@ -57,29 +57,10 @@ export default function Home() {
 
   const [loading, setLoading] = useState(false);
 
-  const [user, setUser] = useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [cms, setCms] = useState(null);
 
   // CHECK LOGGED IN USER
-  useEffect(() => {
 
-    async function getUser() {
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      setUser(user);
-      if (user?.email === "sulaimonganiyu315@gmail.com") {
-  setIsAdmin(true);
-}
-
-    }
-
-    getUser();
-
-  }, []);
 
 useEffect(() => {
   async function loadCMS() {
@@ -95,14 +76,6 @@ useEffect(() => {
   loadCMS();
 }, []);
 
-  // LOGOUT
-  async function handleLogout() {
-
-    await supabase.auth.signOut();
-
-    window.location.href = "/";
-
-  }
 
   async function handleSubmit(e) {    
     
@@ -167,27 +140,6 @@ useEffect(() => {
           <a href="/blog">Blog</a>
           <a href="/contact">Contact</a>
 
-          {user ? (
-            <>
-              <a href="/dashboard">Dashboard</a>
-              {isAdmin && <a href="/admin">Admin</a>}
-              <button
-                onClick={handleLogout}
-                className="border border-white/10 px-5 py-2 rounded-xl"
-              >
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <a href="/login" className="border border-white/10 px-5 py-2 rounded-xl">
-                Login
-              </a>
-              <a href="/signup" className="bg-orange-500 text-black px-5 py-2 rounded-xl font-bold">
-                Sign Up
-              </a>
-            </>
-          )}
         </div>
 
         <div className="flex items-center gap-3">

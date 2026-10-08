@@ -123,47 +123,7 @@ async function handleLogout() {
     Contact
   </a>
 
-  {user ? (
 
-    <>
-
-      <a
-        href="/dashboard"
-        className="hover:text-orange-400 transition"
-      >
-        Dashboard
-      </a>
-
-      <button
-        onClick={handleLogout}
-        className="border border-white/10 px-5 py-3 rounded-xl hover:border-red-500 transition"
-      >
-        Logout
-      </button>
-
-    </>
-
-  ) : (
-
-    <>
-
-      <a
-        href="/login"
-        className="border border-white/10 px-5 py-3 rounded-xl hover:border-orange-500 transition"
-      >
-        Login
-      </a>
-
-      <a
-        href="/signup"
-        className="bg-orange-500 text-black px-5 py-3 rounded-xl font-bold"
-      >
-        Sign Up
-      </a>
-
-    </>
-
-  )}
 
 </div>
 
@@ -219,47 +179,7 @@ async function handleLogout() {
         Contact
       </a>
 
-      {user ? (
 
-        <>
-
-          <a
-            href="/dashboard"
-            className="hover:text-orange-400"
-          >
-            Dashboard
-          </a>
-
-          <button
-            onClick={handleLogout}
-            className="border border-white/10 px-5 py-3 rounded-xl hover:border-red-500 transition"
-          >
-            Logout
-          </button>
-
-        </>
-
-      ) : (
-
-        <>
-
-          <a
-            href="/login"
-            className="border border-white/10 px-5 py-3 rounded-xl hover:border-orange-500 transition"
-          >
-            Login
-          </a>
-
-          <a
-            href="/signup"
-            className="bg-orange-500 text-black px-5 py-3 rounded-xl font-bold"
-          >
-            Sign Up
-          </a>
-
-        </>
-
-      )}
 
       <a
         href="/request"
