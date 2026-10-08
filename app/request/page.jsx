@@ -30,16 +30,7 @@ export default function RequestPage() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      // REDIRECT IF NOT LOGGED IN
-      if (!user) {
 
-        window.location.href = "/login";
-
-        return;
-
-      }
-
-      setUser(user);
 
       // AUTO FILL USER INFO
       setForm((prev) => ({
@@ -137,9 +128,6 @@ export default function RequestPage() {
       } else {
 
         alert("Project Request Sent Successfully ✅");
-
-        // GO TO DASHBOARD
-        window.location.href = "/dashboard";
 
       }
 
