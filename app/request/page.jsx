@@ -39,7 +39,7 @@ export default function RequestPage() {
         .from("project_requests")
         .insert([
           {
-            user_id: user.id,
+            user_id: user?.id ?? null,
             fullname: form.fullname,
             email: form.email,
             service: form.service,
@@ -51,44 +51,33 @@ export default function RequestPage() {
           },
         ]);
 
-      await fetch(
-      "/api/send-message-email",
-      {
+      const response = await fetch("/api/send-message-email", {
         method: "POST",
-
         headers: {
-          "Content-Type":
-            "application/json",
+          "Content-Type": "application/json",
         },
-
         body: JSON.stringify({
-
-          to:
-            "sulaimonganiyu315@gmail.com",
-
-          subject:
-            "New Project Request",
-
+          to: "sulaimonganiyu315@gmail.com",
+          subject: "New Project Request",
           message: `
-        New project request received.
-
-        Client: ${form.fullname}
-
-        Email: ${form.email}
-
-        Service: ${form.service}
-
-        Budget: ${form.budget}
-
-        Timeframe: ${form.timeframe}
-
-        Contract: ${form.contract}
-
-        Details: ${form.details}
-        `,
+      Client: ${form.fullname}
+      Email: ${form.email}
+      Service: ${form.service}
+      Budget: ${form.budget}
+      Timeframe: ${form.timeframe}
+      Contract: ${form.contract}
+      Details: ${form.details}
+          `,
         }),
+      });
+
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          result.error || "Request saved, but email sending failed."
+        );
       }
-    );
 
       if (error) {
 
