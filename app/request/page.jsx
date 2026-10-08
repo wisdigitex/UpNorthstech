@@ -45,14 +45,7 @@ export default function RequestPage() {
 
   }, []);
 
-  // LOGOUT
-  async function handleLogout() {
 
-    await supabase.auth.signOut();
-
-    window.location.href = "/";
-
-  }
 
   // SUBMIT PROJECT
   async function handleSubmit(e) {
